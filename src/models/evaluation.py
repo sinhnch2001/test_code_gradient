@@ -1,16 +1,20 @@
 import numpy as np
 import torch
-import time
-
+import evaluate
 import nltk
-nltk.download('punkt', quiet=True)
-
+import time
 from tqdm.auto import tqdm
 from functools import wraps
-from typing import Optional
+from typing import (
+        Tuple,
+        List,
+        Dict,
+        Optional,
+    )
 from torch.utils.data.dataloader import DataLoader
 from accelerate.utils import DistributedType
 
+from src.utils.text_normalization import normalize_answer
 from metric import Metric
 
 
@@ -26,39 +30,36 @@ def timeit(func):
         return result
     return timeit_wrapper
 
+
 class Evaluation:
     def __init__(self,
                  metrics_name,
-                 eval_dataloaders: DataLoader,
+                 gen_kwargs,
+                 dataloader: DataLoader,
                  ignore_pad_token_for_loss: bool = True,
-                 with_tracking: bool = False,
-                 num_beams: Optional[int] = 4,
-                 max_target_length: Optional[int] = 40
+                 with_tracking: bool = False
                  ):
 
-        self.eval_dataloaders = eval_dataloaders
+        self.dataloader = dataloader
         self.ignore_pad_token_for_loss = ignore_pad_token_for_loss
         self.metrics_name = metrics_name
         self.with_tracking = with_tracking
-        self.num_beams = num_beams
-        self.max_target_length = max_target_length
+        self.gen_kwargs = gen_kwargs
 
     @timeit
-    def eval(self, accelerator, tokenizer, model):
+    def eval(self, accelerator, tokenizer, model, mode):
         accelerator.wait_for_everyone()
         accelerator.print("\n\n**** Starting evaluation ****\n")
+
         model.eval()
 
-        gen_kwargs = {
-            "max_length": self.max_target_length,
-            "num_beams": self.num_beams
-        }
         metrics_list = {}
         for metric_name in self.metrics_name:
-            metrics_list[metric_name]=(Metric(metric_name))
+            metrics_list[metric_name]=(Metric(metric_name, accelerator))
 
         total_loss_eval = 0
-        for step, batch in enumerate(tqdm(self.eval_dataloaders,
+        results = {'examples':{}}
+        for step, batch in enumerate(tqdm(self.dataloader,
                                           desc="Eval on process: " + str(accelerator.process_index),
                                           colour="blue", position=accelerator.process_index)):
             # Pass dummy batch to avoid caffe error
@@ -70,7 +71,7 @@ class Evaluation:
                     batch["input_ids"],
                     attention_mask=batch["attention_mask"],
                     synced_gpus=True if accelerator.distributed_type != DistributedType.NO else False,
-                    **gen_kwargs
+                    **self.gen_kwargs
                 )
 
                 generated_tokens = accelerator.pad_across_processes(
@@ -91,6 +92,20 @@ class Evaluation:
                     generated_tokens = generated_tokens[0]
                 decoded_preds = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
                 decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+                if mode == 'test':
+                    if accelerator.is_main_process:
+                        idx = 0
+                        prompts = tokenizer.batch_decode(batch['input_ids'], skip_special_tokens=True)
+                        for prompt, decoded_pred, decoded_label in zip(prompts, decoded_preds, decoded_labels):
+                            results['examples'][step+idx] = \
+                                                    {
+                                                       'prompt': prompt,
+                                                       'prediction': decoded_pred,
+                                                       'label': decoded_label
+                                                    }
+                            idx += 1
+
                 decoded_preds, decoded_labels = self.postprocess_text(decoded_preds, decoded_labels)
                 for metric_name in metrics_list.keys():
                     metrics_list[metric_name].add_batch(decoded_preds=decoded_preds, decoded_labels=decoded_labels)
@@ -106,22 +121,22 @@ class Evaluation:
                     loss = outputs.loss
                     total_loss_eval += loss.detach().float()
 
-        result_list = {}
         for metric_name in metrics_list.keys():
             result = metrics_list[metric_name].compute()
-            result_list[metric_name] = result
+            if result is not None:
+                results.update(result)
 
         print(f"** Evaluation of process {accelerator.process_index} completed **")
         if self.with_tracking:
-            return result_list, total_loss_eval
-        return result_list
+            return results, total_loss_eval
+        return results
 
-    def postprocess_text(self, preds, labels):
-        preds = [pred.strip() for pred in preds]
-        labels = [label.strip() for label in labels]
-
-        # rougeLSum expects newline after each sentence
-        preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
-        labels = ["\n".join(nltk.sent_tokenize(label)) for label in labels]
+    def postprocess_text(self,
+                    decoded_preds: List[str],
+                    decoded_labels: List[str]) -> Tuple[List[str]]:
+        """Normalize text before calculating metric
+        """
+        preds = [normalize_answer(pred.strip()) for pred in decoded_preds]
+        labels = [normalize_answer(label.strip()) for label in decoded_labels]
 
         return preds, labels

@@ -14,3 +14,4 @@ pyarrow>=7.0.0
 rouge_score>=0.1
 evaluate>=0.3.0
 deepspeed>=0.8.0
+bert_score
