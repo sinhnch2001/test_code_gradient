@@ -1,5 +1,5 @@
 CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_code_gradient/src/config/config_fsdp_t5.yaml /kaggle/working/test_code_gradient/src/models/train_new.py 	\
-  --num_train_epochs 10 \
+  --num_train_epochs 2 \
   --model_name_or_path "google/flan-t5-base" \
 	--output_dir "/kaggle/working/"  \
 	--log_file "./logs" \
