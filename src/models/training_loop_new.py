@@ -238,7 +238,7 @@ class Trainer:
             if self.args.do_eval_per_epoch:
                 if self.args.with_tracking:
                     result, total_loss_eval = evaluator.eval(accelerator=accelerator,
-                                                             tokenizer=self.tokenizer, model=model)
+                                                             tokenizer=self.tokenizer, model=model, mode='val')
                 else:
                     result = evaluator.eval(accelerator=accelerator,
                                             tokenizer=self.tokenizer, model=model, mode='val')
