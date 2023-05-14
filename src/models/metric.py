@@ -73,12 +73,12 @@ class Metric:
 
         elif self.metric_name == "bleu":
             result_bleu = self.metric.compute()
-            for k, v in result_bleu.items():
-                if k == 'precisions':
-                    for i in range(len(v)):
-                        result_bleu['precisions'][i] = round(v[i] * 100, 4)
-                else:
-                    result_bleu[k] = round(v * 100, 4)
+            # for k, v in result_bleu.items():
+            #     if k == 'precisions':
+            #         for i in range(len(v)):
+            #             result_bleu['precisions'][i] = round(v[i] * 100, 4)
+            #     else:
+            #         result_bleu[k] = round(v * 100, 4)
             result = result_bleu
 
         elif self.metric_name == "bertscore":
