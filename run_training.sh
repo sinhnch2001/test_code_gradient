@@ -1,6 +1,6 @@
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file src/config/config_fsdp.yaml src/models/train.py 	\
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_code_gradient/src/config/config_fsdp.yaml /kaggle/working/test_code_gradient/src/models/train.py 	\
   --num_train_epochs 10 \
-	--output_dir "./output"  \
+	--output_dir "/kaggle/working/"  \
 	--log_file "./logs" \
 	--train_files "/kaggle/input/data-test-gradient/train.json"\
 	--val_files "/kaggle/input/data-test-gradient/val.json"\
