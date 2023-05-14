@@ -139,7 +139,7 @@ class Trainer:
                                         init_kwargs={"wandb": {"name": self.args.exp_name}, 'mlflow': {'run_name': self.args.exp_name}},
                                         config=experiment_config)
         # Init Evaluation
-        metrics_name = ['rouge','bleu','bertscore']
+        metrics_name = ['rouge', 'bleu', 'bertscore']
         gen_kwargs = {"num_beams": self.args.num_beams,
                       "max_length": self.args.max_target_length,
                       "min_length": self.args.min_length,
@@ -153,7 +153,7 @@ class Trainer:
                                ignore_pad_token_for_loss=self.args.ignore_pad_token_for_loss,
                                metrics_name=metrics_name,
                                with_tracking=self.args.with_tracking,
-                               max_target_length= self.args.max_target_length)
+                               gen_kwargs=gen_kwargs)
 
         total_batch_size = self.args.per_device_train_batch_size * accelerator.num_processes * self.args.gradient_accumulation_steps
 
