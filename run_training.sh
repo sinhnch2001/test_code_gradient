@@ -16,4 +16,6 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_co
 	--report_to mlflow \
 	--checkpointing_steps epoch \
 	--do_eval_per_epoch \
-	--exp_name test
+	--exp_name test \
+	--max_train_samples 50 \
+  --max_eval_samples 10
