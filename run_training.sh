@@ -13,7 +13,7 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_co
 	--learning_rate 5e-5 \
 	--gradient_accumulation_steps 4 \
 	--with_tracking  \
-	--report_to wandb \
+	--report_to mlflow \
 	--checkpointing_steps epoch \
 	--do_eval_per_epoch \
 	--exp_name test
