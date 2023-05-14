@@ -10,7 +10,7 @@ from transformers import AutoTokenizer
 
 class GradResDataLoader:
     def __init__(self,
-                 model_name: str,
+                 tokenizer: AutoTokenizer,
                  train_file: Union[str, List[str]],
                  val_file: Optional[Union[str, List[str]]],
                  test_file: Optional[Union[str, List[str]]],
@@ -21,7 +21,7 @@ class GradResDataLoader:
                  max_predict_samples: Optional[int] = None
                  ) -> None:
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer = tokenizer
 
         self.train_file = train_file
         self.val_file = val_file
