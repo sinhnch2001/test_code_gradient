@@ -104,7 +104,6 @@ def main():
                                               tokenizer_name=args.tokenizer_name,
                                               model_type=args.model_type,
                                               use_slow=args.use_slow_tokenizer)
-
     dataloader_args = {
         "tokenizer": tokenizer,
         "text_column": args.text_column,
