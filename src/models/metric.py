@@ -1,6 +1,6 @@
 import numpy as np
 import os
-import re
+import tensorflow as tf
 os.environ["HF_DATASETS_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -9,16 +9,35 @@ import datasets
 # https://github.com/huggingface/evaluate/issues/428
 from datasets import DownloadConfig
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    # Restrict TensorFlow to only allocate 256MB of memory on the first GPU
+    try:
+        tf.config.experimental.set_virtual_device_configuration(
+            gpus[0],
+            [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=256)])
+        logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    except RuntimeError as e:
+        # Virtual devices must be set before GPUs have been initialized
+        print(e)
+
 
 class Metric:
-    def __init__(self, metric_name):
+    def __init__(self, metric_name,accelerator):
         self.metric_name = metric_name
         self.dict_preds_labels = {}
 
         if self.metric_name == "bleurt":
-            self.metric = evaluate.load(self.metric_name, "bleurt-base-128", download_config=DownloadConfig(use_etag=False))
+            self.metric = evaluate.load(self.metric_name,
+                                        "bleurt-base-128",
+                                        download_config=DownloadConfig(use_etag=False),
+                                        num_process=accelerator.num_processes,
+                                        process_id=accelerator.process_index)
         elif self.metric_name == "rouge" or self.metric_name == "bleu" or self.metric_name == "bertscore":
-            self.metric = evaluate.load(self.metric_name)
+            self.metric = evaluate.load(self.metric_name,
+                                        num_process=accelerator.num_processes,
+                                        process_id=accelerator.process_index)
         else:
             self.metric = None
 
@@ -70,7 +89,7 @@ class Metric:
         elif self.metric_name == "bleurt":
             result_bleurt = self.metric.compute()
             result_bleurt["scores"] = round(np.mean(result_bleurt["scores"])*100, 4)
-            result = result_bleurt["scores"]
+            result = result_bleurt
         elif self.metric_name == "relative-slot-acc":
             a=1
         return result
