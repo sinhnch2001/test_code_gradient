@@ -3,8 +3,8 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_co
   --model_name_or_path "google/flan-t5-base"
 	--output_dir "/kaggle/working/"  \
 	--log_file "./logs" \
-	--train_files "/kaggle/input/data-test-gradient/train.json"\
-	--val_files "/kaggle/input/data-test-gradient/val.json"\
+	--train_files "/kaggle/input/data-test-gradient/test.json" "/kaggle/input/data-test-gradient/test - Copy.json"\
+	--val_files "/kaggle/input/data-test-gradient/val.json" "/kaggle/input/data-test-gradient/val - Copy.json"\
   --per_device_train_batch_size 16 \
   --per_device_eval_batch_size 16 \
 	--num_beams   4 \
