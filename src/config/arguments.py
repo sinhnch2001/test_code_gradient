@@ -216,6 +216,13 @@ class ModuleArguments(Arguments):
         )
 
         self.parser.add_argument(
+            "--batch_size",
+            type=int,
+            default=8,
+            help="Batch size (per device) for the evaluation dataloader.",
+        )
+
+        self.parser.add_argument(
             "--learning_rate",
             type=float,
             default=5e-5,

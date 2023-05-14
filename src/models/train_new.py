@@ -106,15 +106,11 @@ def main():
                                               use_slow=args.use_slow_tokenizer)
     dataloader_args = {
         "tokenizer": tokenizer,
-        "text_column": args.text_column,
-        "target_column": args.target_column,
         "train_file": args.train_files,
         "val_file": args.val_files,
-        "train_batch_size": args.per_device_train_batch_size,
-        "val_batch_size":args.per_device_eval_batch_size,
+        "batch_size": args.batch_size,
         "max_train_samples": args.max_train_samples,
         "max_eval_samples": args.max_eval_samples,
-        "source_prefix": args.source_prefix,
         "seed": args.seed
     }
     dataloaders = GradResDataLoader(**dataloader_args)
