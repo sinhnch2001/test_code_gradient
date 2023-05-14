@@ -154,7 +154,7 @@ class Trainer:
                                metrics_name=metrics_name,
                                with_tracking=self.args.with_tracking,
                                num_beams=self.args.num_beams,
-                               max_length= self.args.max_target_length)
+                               max_target_length= self.args.max_target_length)
 
         total_batch_size = self.args.per_device_train_batch_size * accelerator.num_processes * self.args.gradient_accumulation_steps
 
