@@ -305,9 +305,9 @@ class Trainer:
                     state = accelerator.get_state_dict(unwrapped_model)
             else:
                 state = accelerator.get_state_dict(model)
-            self.save(accelerator, unwrapped_model, self.tokenizer, result, state, save_type='Final')
+            self.save(accelerator, unwrapped_model, result, state, save_type='Final')
 
-    def save(self, accelerator, unwrapped_model, tokenizer, result, state, save_type):
+    def save(self, accelerator, unwrapped_model, result, state, save_type):
         if self.args.output_dir is not None:
             model_dir = Path(os.path.join(self.args.output_dir, save_type))
             if not model_dir.is_dir():
@@ -318,7 +318,7 @@ class Trainer:
             state_dict=state
         )
         if accelerator.is_main_process:
-            tokenizer.save_pretrained(model_dir)
+            self.tokenizer.save_pretrained(model_dir)
             all_results = {f"eval_{k}": v for k, v in result.items()}
             with open(os.path.join(model_dir, "all_results.json"), "w") as f:
                 json.dump(all_results, f)
