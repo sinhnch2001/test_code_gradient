@@ -104,7 +104,6 @@ def main():
                                               tokenizer_name=args.tokenizer_name,
                                               model_type=args.model_type,
                                               use_slow=args.use_slow_tokenizer)
-    print("Start dataloaders")
     dataloader_args = {
         "tokenizer": tokenizer,
         "train_file": args.train_files,
@@ -116,8 +115,6 @@ def main():
         "seed": args.seed
     }
     dataloaders = GradResDataLoader(**dataloader_args)
-    print("End dataloaders")
-    print("Start trainer")
     trainer_args = {
         "model": model,
         "tokenizer": tokenizer,
@@ -126,8 +123,6 @@ def main():
         "dataloaders": dataloaders
     }
     trainer = Trainer(**trainer_args)
-    print("End trainer")
-    print("Start train")
     trainer.train()
 
 if __name__ == "__main__":
