@@ -149,7 +149,7 @@ class Trainer:
                       "temperature": self.args.temperature,
                       "no_repeat_ngram_size": self.args.no_repeat_ngram_size,
                       "num_return_sequences": self.args.num_return_sequences}
-        evaluator = Evaluation(eval_dataloaders=dataloaders['eval'],
+        evaluator = Evaluation(dataloader=dataloaders['eval'],
                                ignore_pad_token_for_loss=self.args.ignore_pad_token_for_loss,
                                metrics_name=metrics_name,
                                with_tracking=self.args.with_tracking,
