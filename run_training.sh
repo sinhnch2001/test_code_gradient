@@ -17,5 +17,5 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_co
 	--checkpointing_steps epoch \
 	--do_eval_per_epoch \
 	--exp_name test \
-	--max_train_samples 50 \
-  --max_eval_samples 10
+	--max_train_samples 200 \
+  --max_eval_samples 50
