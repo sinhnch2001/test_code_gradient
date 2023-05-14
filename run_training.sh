@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_code_gradient/src/config/config_fsdp.yaml /kaggle/working/test_code_gradient/src/models/train.py 	\
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file /kaggle/working/test_code_gradient/src/config/config_fsdp_t5.yaml /kaggle/working/test_code_gradient/src/models/train.py 	\
   --num_train_epochs 10 \
 	--output_dir "/kaggle/working/"  \
 	--log_file "./logs" \
