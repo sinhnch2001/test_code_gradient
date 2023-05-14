@@ -59,13 +59,11 @@ class Evaluation:
 
         total_loss_eval = 0
         results = {'examples':{}}
-        print(self.dataloader)
         for step, batch in enumerate(tqdm(self.dataloader,
                                           desc="Eval on process: " + str(accelerator.process_index),
                                           colour="blue", position=accelerator.process_index)):
             # Pass dummy batch to avoid caffe error
             if step == 0 and accelerator.distributed_type == DistributedType.FSDP:
-                print(batch)
                 model(**batch)
             with torch.no_grad():
                 # synced_gpus was necessary else resulted into indefinite hang
