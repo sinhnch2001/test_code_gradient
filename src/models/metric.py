@@ -83,14 +83,14 @@ class Metric:
 
         elif self.metric_name == "bertscore":
             result_bert = self.metric.compute(model_type="distilbert-base-uncased")
-            result_bert["precision"] = round(np.mean(result_bert["precision"]) * 100, 4)
-            result_bert["recall"] = round(np.mean(result_bert["recall"]) * 100, 4)
-            result_bert["f1"] = round(np.mean(result_bert["f1"]) * 100, 4)
+            # result_bert["precision"] = round(np.mean(result_bert["precision"]) * 100, 4)
+            # result_bert["recall"] = round(np.mean(result_bert["recall"]) * 100, 4)
+            # result_bert["f1"] = round(np.mean(result_bert["f1"]) * 100, 4)
             result = result_bert
 
         elif self.metric_name == "bleurt":
             result_bleurt = self.metric.compute()
-            result_bleurt["scores"] = round(np.mean(result_bleurt["scores"])*100, 4)
+            # result_bleurt["scores"] = round(np.mean(result_bleurt["scores"])*100, 4)
             result = result_bleurt
         elif self.metric_name == "relative-slot-acc":
             a=1
