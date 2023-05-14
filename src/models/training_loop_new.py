@@ -233,7 +233,7 @@ class Trainer:
 
                 if completed_steps >= self.args.max_train_steps:
                     break
-
+            print("total_loss: ",total_loss)
             # Eval per epoch
             if self.args.do_eval_per_epoch:
                 if self.args.with_tracking:
@@ -289,6 +289,7 @@ class Trainer:
             if self.args.checkpointing_steps == "epoch":
                 with accelerator.main_process_first():
                     self.save_cpkt(accelerator,checkpointing_steps=self.args.checkpointing_steps,epoch=epoch)
+            print("result, total_loss_eval: ", result +", "+ total_loss_eval)
             print(f"ENDING EPOCH: {epoch} on process "+str(accelerator.process_index))
 
         if self.args.with_tracking:
