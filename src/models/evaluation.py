@@ -59,6 +59,7 @@ class Evaluation:
 
         total_loss_eval = 0
         results = {'examples':{}}
+        print(self.dataloader)
         for step, batch in enumerate(tqdm(self.dataloader,
                                           desc="Eval on process: " + str(accelerator.process_index),
                                           colour="blue", position=accelerator.process_index)):
