@@ -66,8 +66,9 @@ class Metric:
     def compute(self):
         if self.metric_name == "rouge":
             result_rouge = self.metric.compute(use_stemmer=True)
-            print(result_rouge)
-            result_rouge = {k: round(v * 100, 4) for k, v in result_rouge.items()}
+            print(type(result_rouge))
+            for k, v in result_rouge.items():
+                result_rouge[k] = round(v * 100, 4)
             result = result_rouge
 
         elif self.metric_name == "bleu":
