@@ -138,7 +138,7 @@ class Trainer:
                                         init_kwargs={"wandb": {"name": self.args.exp_name}, 'mlflow': {'run_name': self.args.exp_name}},
                                         config=experiment_config)
         # Init Evaluation
-        metrics_name = ['rouge', 'bleu', 'bertscore']
+        metrics_name = ['rouge', 'bleu', 'bleurt']
         gen_kwargs = {"num_beams": self.args.num_beams,
                       "max_length": self.args.max_target_length,
                       "min_length": self.args.min_length,
