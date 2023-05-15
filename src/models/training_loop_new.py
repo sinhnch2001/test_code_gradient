@@ -63,7 +63,6 @@ class Trainer:
 
     @timeit
     def train(self):
-        print(self.args)
         # log in wandb
         if self.args.with_tracking and (self.args.report_to == 'all' or self.args.report_to == 'wandb'):
             if os.getenv("WANDB_API_KEY") is None:
