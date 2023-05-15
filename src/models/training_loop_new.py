@@ -233,7 +233,6 @@ class Trainer:
 
                 if completed_steps >= self.args.max_train_steps:
                     break
-            print("\nTotal_loss: ",total_loss)
             # Eval per epoch
             if self.args.do_eval_per_epoch:
                 if self.args.with_tracking:
@@ -284,9 +283,6 @@ class Trainer:
                     accelerator.log(result, step=completed_steps)
                     logger.info(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
                     logger.info(result["train_loss"])
-            print("train_loss: ", result["train_loss"])
-            print("epoch: ", result["epoch"])
-            print("eval_loss: ", result["eval_loss"])
             accelerator.wait_for_everyone()
             if self.args.checkpointing_steps == "epoch":
                 with accelerator.main_process_first():
