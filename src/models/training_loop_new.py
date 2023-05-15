@@ -311,7 +311,7 @@ class Trainer:
             # print("train_loss: ", total_loss.item() / len(self.dataloaders['train']))
             # print(f"*** EVAL LOSS AT EPOCH {epoch} ***")
             # print("eval_loss: ", total_loss_eval.item() / len(self.dataloaders['eval']))
-            print("Result: ", result)
+            print("RougeL: ", result["rougeL"])
             print(f"ENDING EPOCH: {epoch} on process "+str(accelerator.process_index))
 
         if self.args.with_tracking:

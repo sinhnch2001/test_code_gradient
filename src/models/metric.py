@@ -66,31 +66,31 @@ class Metric:
     def compute(self):
         if self.metric_name == "rouge":
             result_rouge = self.metric.compute(use_stemmer=True)
-            # print(type(result_rouge))
-            # for k, v in result_rouge.items():
-            #     result_rouge[k] = round(v * 100, 4)
+            print(type(result_rouge))
+            for k, v in result_rouge.items():
+                result_rouge[k] = round(v * 100, 4)
             result = result_rouge
 
         elif self.metric_name == "bleu":
             result_bleu = self.metric.compute()
-            # for k, v in result_bleu.items():
-            #     if k == 'precisions':
-            #         for i in range(len(v)):
-            #             result_bleu['precisions'][i] = round(v[i] * 100, 4)
-            #     else:
-            #         result_bleu[k] = round(v * 100, 4)
+            for k, v in result_bleu.items():
+                if k == 'precisions':
+                    for i in range(len(v)):
+                        result_bleu['precisions'][i] = round(v[i] * 100, 4)
+                else:
+                    result_bleu[k] = round(v * 100, 4)
             result = result_bleu
 
         elif self.metric_name == "bertscore":
             result_bert = self.metric.compute(model_type="distilbert-base-uncased")
-            # result_bert["precision"] = round(np.mean(result_bert["precision"]) * 100, 4)
-            # result_bert["recall"] = round(np.mean(result_bert["recall"]) * 100, 4)
-            # result_bert["f1"] = round(np.mean(result_bert["f1"]) * 100, 4)
+            result_bert["precision"] = round(np.mean(result_bert["precision"]) * 100, 4)
+            result_bert["recall"] = round(np.mean(result_bert["recall"]) * 100, 4)
+            result_bert["f1"] = round(np.mean(result_bert["f1"]) * 100, 4)
             result = result_bert
 
         elif self.metric_name == "bleurt":
             result_bleurt = self.metric.compute()
-            # result_bleurt["scores"] = round(np.mean(result_bleurt["scores"])*100, 4)
+            result_bleurt["scores"] = round(np.mean(result_bleurt["scores"])*100, 4)
             result = result_bleurt
         elif self.metric_name == "relative-slot-acc":
             a=1
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     for metric_name in metrics_name:
         metrics_list[metric_name] = (Metric(metric_name))
     print(metrics_list)
-    # metric = Metric("bleurt") # or bertscore, bleu, rouge, bleurt
-    # metric.add_batch(["hello there general kenobi", "foo bar foobar"], ["hi there general kenobi","foo bar foobar"])
-    # result = metric.compute()
-    # print(result)
+    metric = Metric("rouge") # or bertscore, bleu, rouge, bleurt
+    metric.add_batch(["hello there general kenobi", "foo bar foobar"], ["hi there general kenobi","foo bar foobar"])
+    result = metric.compute()
+    print(result)
