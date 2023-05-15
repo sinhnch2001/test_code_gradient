@@ -289,9 +289,9 @@ class Trainer:
                     self.save_cpkt(accelerator,checkpointing_steps=self.args.checkpointing_steps,epoch=epoch)
 
             print(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
-            print("train_loss: ", result["train_loss"])
+            print("train_loss: ", total_loss.item() / len(self.dataloaders['train']))
             print(f"*** EVAL LOSS AT EPOCH {epoch} ***")
-            print("eval_loss: ", result["eval_loss"])
+            print("eval_loss: ", total_loss_eval.item() / len(self.dataloaders['eval']))
             print(f"ENDING EPOCH: {epoch} on process "+str(accelerator.process_index))
 
         if self.args.with_tracking:
