@@ -164,6 +164,14 @@ class Trainer:
         logger.info(f"  Gradient Accumulation steps = {self.args.gradient_accumulation_steps}")
         logger.info(f"  Total optimization steps = {self.args.max_train_steps}")
 
+        print("***** Running training *****")
+        print(f"  Num examples = {len(dataloaders['train'])}")
+        print(f"  Num Epochs = {self.args.num_train_epochs}")
+        print(f"  Instantaneous batch size per device = {self.args.per_device_train_batch_size}")
+        print(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
+        print(f"  Gradient Accumulation steps = {self.args.gradient_accumulation_steps}")
+        print(f"  Total optimization steps = {self.args.max_train_steps}")
+
         # Only show the progress bar once on each machine.
         progress_bar = tqdm(range(self.args.max_train_steps), disable=not accelerator.is_local_main_process, colour="green")
         starting_epoch = 0
@@ -254,6 +262,11 @@ class Trainer:
                         logger.info(f"*** EVAL LOSS AT EPOCH {epoch} ***")
                         logger.info(result["eval_loss"])
 
+                        print(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
+                        print("train_loss: ", total_loss.item() / len(self.dataloaders['train']))
+                        print(f"*** EVAL LOSS AT EPOCH {epoch} ***")
+                        print("eval_loss: ", total_loss_eval.item() / len(self.dataloaders['eval']))
+
                 # Saving best rougeLsum score
                 if self.args.output_dir is not None and self.args.with_tracking:
                     accelerator.wait_for_everyone()
@@ -270,9 +283,13 @@ class Trainer:
                         if result['rougeLsum'] == max(rougeLSum_scores):
                             logger.info(f"***** Saving best rougeLsum score epoch *****")
                             logger.info(f"Saving epoch: {epoch}")
+
+                            print(f"***** Saving best rougeLsum score epoch *****")
+                            print(f"Saving epoch: {epoch}")
                             self.save(accelerator, unwrapped_model, self.tokenizer, result, state, 'Best')
                         else:
                             logger.info(f"***** Discarding epoch {epoch} *****")
+                            print(f"***** Discarding epoch {epoch} *****")
 
             else:
                 result = {}
@@ -282,15 +299,18 @@ class Trainer:
                     accelerator.log(result, step=completed_steps)
                     logger.info(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
                     logger.info(result["train_loss"])
+
+                    print(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
+                    print("train_loss: ",total_loss.item() / len(self.dataloaders['train']))
             accelerator.wait_for_everyone()
             if self.args.checkpointing_steps == "epoch":
                 with accelerator.main_process_first():
                     self.save_cpkt(accelerator,checkpointing_steps=self.args.checkpointing_steps,epoch=epoch)
 
-            print(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
-            print("train_loss: ", total_loss.item() / len(self.dataloaders['train']))
-            print(f"*** EVAL LOSS AT EPOCH {epoch} ***")
-            print("eval_loss: ", total_loss_eval.item() / len(self.dataloaders['eval']))
+            # print(f"*** TRAINING LOSS AT EPOCH {epoch} ***")
+            # print("train_loss: ", total_loss.item() / len(self.dataloaders['train']))
+            # print(f"*** EVAL LOSS AT EPOCH {epoch} ***")
+            # print("eval_loss: ", total_loss_eval.item() / len(self.dataloaders['eval']))
             print(f"ENDING EPOCH: {epoch} on process "+str(accelerator.process_index))
 
         if self.args.with_tracking:
@@ -333,6 +353,7 @@ class Trainer:
 
         if checkpointing_steps == "epoch":
             logger.info(f"***** Saving checkpoint at epoch {epoch} *****")
+            print(f"***** Saving checkpoint at epoch {epoch} *****")
             output_dir = f"epoch_{epoch}"
             output_dir = os.path.join(checkpoints_dir, output_dir)
             accelerator.save_state(output_dir)
@@ -340,6 +361,7 @@ class Trainer:
         elif isinstance(checkpointing_steps, int):
             if completed_steps % checkpointing_steps == 0:
                 logger.info(f"***** Saving checkpoint at steps {completed_steps} *****")
+                print(f"***** Saving checkpoint at steps {completed_steps} *****")
                 output_dir = f"step_{completed_steps}"
                 output_dir = os.path.join(checkpoints_dir, output_dir)
                 accelerator.save_state(output_dir)
