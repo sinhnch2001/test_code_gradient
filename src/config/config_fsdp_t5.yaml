@@ -13,7 +13,7 @@ machine_rank: 0
 main_process_ip: null
 main_process_port: null
 main_training_function: trainer.train
-mixed_precision: 'fp16'
+mixed_precision: 'fp32'
 num_machines: 1
 num_processes: 2
 use_cpu: false
